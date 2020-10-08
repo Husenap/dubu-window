@@ -16,6 +16,7 @@ option(${PROJECT_NAME}_BUILD_TESTS
     "If the ${PROJECT_NAME} tests are built in addition to the ${PROJECT_NAME} library."
     ON)
 
+include("thirdparty/dubu_event.cmake")
 include("thirdparty/glfw.cmake")
 
 add_subdirectory("dubu_window")
