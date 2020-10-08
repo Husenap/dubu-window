@@ -1,6 +1,5 @@
 #include <iostream>
 #include <string>
-#include <thread>
 
 #include <dubu_window/dubu_window.h>
 
@@ -10,7 +9,7 @@ struct WindowInstance {
 };
 
 int main() {
-	constexpr int NumWindows = 5;
+	constexpr int NumWindows = 2;
 
 	std::vector<WindowInstance> windows;
 	for (int i = 0; i < NumWindows; ++i) {
@@ -41,7 +40,5 @@ int main() {
 
 			window->PollEvents();
 		}
-
-		std::this_thread::yield();
 	}
 }
