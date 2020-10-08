@@ -25,16 +25,16 @@ C++ Window Library using [GLFW](https://github.com/glfw/glfw) and [dubu-event](h
 #include <dubu_window/dubu_window.h>
 
 int main() {
-	dubu::window::Window window(400, 400, "simple window");
-	auto token = window.Subscribe<dubu::window::EventResize>([](const auto& e) {
-		std::cout << "Window "
-		          << " resized: " << e.width << ", " << e.height << ")"
-		          << std::endl;
-	});
+    dubu::window::Window window(400, 400, "simple window");
+    auto token = window.Subscribe<dubu::window::EventResize>([](const auto& e) {
+        std::cout << "Window "
+                  << " resized: " << e.width << ", " << e.height << ")"
+                  << std::endl;
+    });
 
-	while (!window.ShouldClose()) {
-		window.PollEvents();
-	}
+    while (!window.ShouldClose()) {
+        window.PollEvents();
+    }
 }
 ```
 
@@ -46,42 +46,42 @@ int main() {
 #include <dubu_window/dubu_window.h>
 
 struct WindowInstance {
-	std::unique_ptr<dubu::window::Window> window;
-	dubu::event::Token                    resizeToken;
+    std::unique_ptr<dubu::window::Window> window;
+    dubu::event::Token                    resizeToken;
 };
 
 int main() {
-	constexpr int NumWindows = 5;
+    constexpr int NumWindows = 5;
 
-	std::vector<WindowInstance> windows;
-	for (int i = 0; i < NumWindows; ++i) {
-		windows.emplace_back(
-		    WindowInstance{.window = std::make_unique<dubu::window::Window>(
-		                       400, 400, "Window " + std::to_string(i + 1))});
-	}
+    std::vector<WindowInstance> windows;
+    for (int i = 0; i < NumWindows; ++i) {
+        windows.emplace_back(
+            WindowInstance{.window = std::make_unique<dubu::window::Window>(
+                               400, 400, "Window " + std::to_string(i + 1))});
+    }
 
-	std::vector<dubu::event::Token> tokens;
+    std::vector<dubu::event::Token> tokens;
 
-	for (std::size_t i = 0; i < windows.size(); ++i) {
-		windows[i].resizeToken =
-		    windows[i].window->Subscribe<dubu::window::EventResize>(
-		        [i](const auto& e) {
-			        std::cout << "Window " << (i + 1) << " resized: " << e.width
-			                  << ", " << e.height << ")" << std::endl;
-		        });
-	}
+    for (std::size_t i = 0; i < windows.size(); ++i) {
+        windows[i].resizeToken =
+            windows[i].window->Subscribe<dubu::window::EventResize>(
+                [i](const auto& e) {
+                    std::cout << "Window " << (i + 1) << " resized: " << e.width
+                              << ", " << e.height << ")" << std::endl;
+                });
+    }
 
-	while (!windows.empty()) {
-		for (std::size_t i = 0; i < windows.size(); ++i) {
-			auto& window = windows[i].window;
-			if (window->ShouldClose()) {
-				windows.erase(windows.begin() + i);
-				--i;
-				continue;
-			}
+    while (!windows.empty()) {
+        for (std::size_t i = 0; i < windows.size(); ++i) {
+            auto& window = windows[i].window;
+            if (window->ShouldClose()) {
+                windows.erase(windows.begin() + i);
+                --i;
+                continue;
+            }
 
-			window->PollEvents();
-		}
-	}
+            window->PollEvents();
+        }
+    }
 }
 ```
