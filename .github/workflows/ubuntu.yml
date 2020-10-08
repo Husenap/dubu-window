@@ -13,7 +13,7 @@ jobs:
       run: sudo apt-get install -y libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev
 
     - name: Generate
-      run: cmake . -B.build -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=gcc-9 -DCMAKE_CXX_COMPILER=g++-9 -DGLFW_INCLUDE_NONE=1
+      run: cmake . -B.build -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=gcc-9 -DCMAKE_CXX_COMPILER=g++-9 
       
     - name: Build
       run: cmake --build .build/
