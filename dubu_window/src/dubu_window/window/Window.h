@@ -2,6 +2,12 @@
 
 namespace dubu::window {
 
+enum class CursorMode {
+	Normal,
+	Hidden,
+	Locked,
+};
+
 class Window : public dubu::event::EventEmitter {
 public:
 	Window();
@@ -11,6 +17,12 @@ public:
 	void PollEvents();
 	bool ShouldClose() const;
 	void SwapBuffers();
+
+	void SetCursorMode(dubu::window::CursorMode cursorMode);
+	bool IsHovered() const;
+
+	static bool                            IsGamepadConnected(int gamepadIndex);
+	static std::optional<GLFWgamepadstate> GetGamepadState(int gamepadIndex);
 
 private:
 	static Window* GetUserWindow(GLFWwindow* window);
@@ -25,9 +37,23 @@ private:
 	static void WindowContentScaleCallback(GLFWwindow* window,
 	                                       float       scaleX,
 	                                       float       scaleY);
+	static void WindowCharCallback(GLFWwindow* window, uint32_t codepoint);
+	static void WindowCursorPosCallback(GLFWwindow* window,
+	                                    double      posX,
+	                                    double      posY);
+	static void WindowCursorEnterCallback(GLFWwindow* window, int entered);
+	static void WindowMouseButtonCallback(GLFWwindow* window,
+	                                      int         button,
+	                                      int         action,
+	                                      int         mods);
+	static void WindowScrollCallback(GLFWwindow* window,
+	                                 double      offsetX,
+	                                 double      offsetY);
+
+	static int ConstructionCounter;
 
 	GLFWwindow* mWindow;
-	static int  ConstructionCounter;
+	CursorMode  mCursorMode;
 };
 
 }  // namespace dubu::window

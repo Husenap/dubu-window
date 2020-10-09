@@ -23,6 +23,11 @@ Window::Window(int width, int height, const std::string& title) {
 	glfwSetKeyCallback(mWindow, WindowKeyCallback);
 	glfwSetDropCallback(mWindow, WindowDropCallback);
 	glfwSetWindowContentScaleCallback(mWindow, WindowContentScaleCallback);
+	glfwSetCharCallback(mWindow, WindowCharCallback);
+	glfwSetCursorPosCallback(mWindow, WindowCursorPosCallback);
+	glfwSetCursorEnterCallback(mWindow, WindowCursorEnterCallback);
+	glfwSetMouseButtonCallback(mWindow, WindowMouseButtonCallback);
+	glfwSetScrollCallback(mWindow, WindowScrollCallback);
 }
 
 Window::~Window() {
@@ -46,6 +51,44 @@ bool Window::ShouldClose() const {
 
 void Window::SwapBuffers() {
 	glfwSwapBuffers(mWindow);
+}
+
+void Window::SetCursorMode(dubu::window::CursorMode cursorMode) {
+	mCursorMode = cursorMode;
+
+	switch (mCursorMode) {
+	case CursorMode::Normal:
+		glfwSetInputMode(mWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		break;
+	case CursorMode::Hidden:
+		glfwSetInputMode(mWindow, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+		break;
+	case CursorMode::Locked:
+		glfwSetInputMode(mWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		break;
+	}
+}
+
+bool Window::IsHovered() const {
+	return glfwGetWindowAttrib(mWindow, GLFW_HOVERED);
+}
+
+bool Window::IsGamepadConnected(int gamepadIndex) {
+	return glfwJoystickIsGamepad(gamepadIndex);
+}
+
+std::optional<GLFWgamepadstate> Window::GetGamepadState(int gamepadIndex) {
+	if (!IsGamepadConnected(gamepadIndex)) {
+		return std::nullopt;
+	}
+
+	GLFWgamepadstate gps;
+
+	if (glfwGetGamepadState(gamepadIndex, &gps) == GLFW_FALSE) {
+		return std::nullopt;
+	}
+
+	return gps;
 }
 
 Window* Window::GetUserWindow(GLFWwindow* window) {
@@ -99,7 +142,62 @@ void Window::WindowContentScaleCallback(GLFWwindow* window,
                                         float       scaleX,
                                         float       scaleY) {
 	if (auto userWindow = GetUserWindow(window); userWindow) {
-		userWindow->Emit(EventContentScale{scaleX, scaleY});
+		userWindow->Emit(EventContentScale{.scaleX = scaleX, .scaleY = scaleY});
+	}
+}
+
+void Window::WindowCharCallback(GLFWwindow* window, uint32_t codepoint) {
+	if (auto userWindow = GetUserWindow(window); userWindow) {
+		userWindow->Emit(EventChar{.codepoint = codepoint});
+	}
+}
+
+void Window::WindowCursorPosCallback(GLFWwindow* window,
+                                     double      posX,
+                                     double      posY) {
+	if (auto userWindow = GetUserWindow(window); userWindow) {
+		userWindow->Emit(EventCursorPos{.posX = posX, .posY = posY});
+	}
+}
+
+void Window::WindowCursorEnterCallback(GLFWwindow* window, int entered) {
+	if (auto userWindow = GetUserWindow(window); userWindow) {
+		if (entered) {
+			userWindow->Emit<EventCursorEnter>();
+		} else {
+			userWindow->Emit<EventCursorLeave>();
+		}
+	}
+}
+
+void Window::WindowMouseButtonCallback(GLFWwindow* window,
+                                       int         button,
+                                       int         action,
+                                       int         mods) {
+	if (auto userWindow = GetUserWindow(window); userWindow) {
+		userWindow->Emit(
+		    EventMouseButton{.button = button, .action = action, .mods = mods});
+
+		switch (action) {
+		case GLFW_PRESS:
+			userWindow->Emit(
+			    EventMouseButtonPress{.button = button, .mods = mods});
+			break;
+		case GLFW_RELEASE:
+			userWindow->Emit(
+			    EventMouseButtonRelease{.button = button, .mods = mods});
+			break;
+		default:
+			break;
+		}
+	}
+}
+
+void Window::WindowScrollCallback(GLFWwindow* window,
+                                  double      offsetX,
+                                  double      offsetY) {
+	if (auto userWindow = GetUserWindow(window); userWindow) {
+		userWindow->Emit(EventScroll{.offsetX = offsetX, .offsetY = offsetY});
 	}
 }
 

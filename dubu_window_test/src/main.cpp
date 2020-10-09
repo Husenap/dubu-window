@@ -1,37 +1,128 @@
 #include <iostream>
 #include <string>
+#include <thread>
+#include <chrono>
+
+using namespace std::chrono_literals;
 
 #include <dubu_window/dubu_window.h>
 
-struct WindowInstance {
+class WindowInstance : public dubu::event::EventSubscriber {
+public:
+	WindowInstance(int number) {
+		name   = "Window " + std::to_string(number);
+		window = std::make_unique<dubu::window::Window>(400, 400, name);
+
+		Subscribe<dubu::window::EventResize>(
+		    [this](const auto& e) {
+			    std::cout << name << " resized: (" << e.width << ", "
+			              << e.height << ")" << std::endl;
+		    },
+		    *window);
+		Subscribe<dubu::window::EventContentScale>(
+		    [this](const auto& e) {
+			    std::cout << name << " content scale: (" << e.scaleX << ", "
+			              << e.scaleY << ")" << std::endl;
+		    },
+		    *window);
+		Subscribe<dubu::window::EventKeyPress>(
+		    [this](const auto& e) {
+			    std::cout << name << " key press: (" << e.key << ", "
+			              << e.scancode << ", " << e.mods << ")" << std::endl;
+		    },
+		    *window);
+		Subscribe<dubu::window::EventKey>(
+		    [this](const auto& e) {
+			    std::cout << name << " key: (" << e.key << ", " << e.scancode
+			              << ", " << e.action << ", " << e.mods << ")"
+			              << std::endl;
+		    },
+		    *window);
+		Subscribe<dubu::window::EventKeyRelease>(
+		    [this](const auto& e) {
+			    std::cout << name << " key release: (" << e.key << ", "
+			              << e.scancode << ", " << e.mods << ")" << std::endl;
+		    },
+		    *window);
+		Subscribe<dubu::window::EventKeyRepeat>(
+		    [this](const auto& e) {
+			    std::cout << name << " key repeat: (" << e.key << ", "
+			              << e.scancode << ", " << e.mods << ")" << std::endl;
+		    },
+		    *window);
+		Subscribe<dubu::window::EventChar>(
+		    [this](const auto& e) {
+			    std::cout << name << " char: (" << e.codepoint << ")"
+			              << std::endl;
+		    },
+		    *window);
+		Subscribe<dubu::window::EventCursorPos>(
+		    [this](const auto& e) {
+			    std::cout << name << " cursor pos: (" << e.posX << ", "
+			              << e.posY << ")" << std::endl;
+		    },
+		    *window);
+		Subscribe<dubu::window::EventCursorEnter>(
+		    [this](const auto&) {
+			    std::cout << name << " cursor enter" << std::endl;
+		    },
+		    *window);
+		Subscribe<dubu::window::EventCursorLeave>(
+		    [this](const auto&) {
+			    std::cout << name << " cursor leave" << std::endl;
+		    },
+		    *window);
+		Subscribe<dubu::window::EventMouseButton>(
+		    [this](const auto& e) {
+			    std::cout << name << " mouse button: (" << e.button << ", "
+			              << e.action << ", " << e.mods << ")" << std::endl;
+		    },
+		    *window);
+		Subscribe<dubu::window::EventMouseButtonPress>(
+		    [this](const auto& e) {
+			    std::cout << name << " mouse button press: (" << e.button
+			              << ", " << e.mods << ")" << std::endl;
+		    },
+		    *window);
+		Subscribe<dubu::window::EventMouseButtonRelease>(
+		    [this](const auto& e) {
+			    std::cout << name << " mouse button release: (" << e.button
+			              << ", " << e.mods << ")" << std::endl;
+		    },
+		    *window);
+		Subscribe<dubu::window::EventScroll>(
+		    [this](const auto& e) {
+			    std::cout << name << " scroll: (" << e.offsetX << ", "
+			              << e.offsetY << ")" << std::endl;
+		    },
+		    *window);
+		Subscribe<dubu::window::EventDroppedFile>(
+		    [this](const auto& e) {
+			    std::cout << name << " dropped file: (" << e.file << ")"
+			              << std::endl;
+		    },
+		    *window);
+	}
+	std::string                           name;
 	std::unique_ptr<dubu::window::Window> window;
-	dubu::event::Token                    resizeToken;
 };
 
 int main() {
-	constexpr int NumWindows = 2;
+	constexpr int                                NumStartWindows = 2;
+	int                                          windowCount     = 0;
+	std::vector<std::unique_ptr<WindowInstance>> windows;
 
-	std::vector<WindowInstance> windows;
-	for (int i = 0; i < NumWindows; ++i) {
-		windows.emplace_back(
-		    WindowInstance{.window = std::make_unique<dubu::window::Window>(
-		                       400, 400, "Window " + std::to_string(i + 1))});
-	}
+	auto AddNewWindow = [&] {
+		windows.emplace_back(std::make_unique<WindowInstance>(++windowCount));
+	};
 
-	std::vector<dubu::event::Token> tokens;
-
-	for (std::size_t i = 0; i < windows.size(); ++i) {
-		windows[i].resizeToken =
-		    windows[i].window->Subscribe<dubu::window::EventResize>(
-		        [i](const auto& e) {
-			        std::cout << "Window " << (i + 1) << " resized: " << e.width
-			                  << ", " << e.height << ")" << std::endl;
-		        });
+	for (int i = 0; i < NumStartWindows; ++i) {
+		AddNewWindow();
 	}
 
 	while (!windows.empty()) {
 		for (std::size_t i = 0; i < windows.size(); ++i) {
-			auto& window = windows[i].window;
+			auto& window = windows[i]->window;
 			if (window->ShouldClose()) {
 				windows.erase(windows.begin() + i);
 				--i;
@@ -40,5 +131,18 @@ int main() {
 
 			window->PollEvents();
 		}
+
+		for (int i = 0; i < 4; ++i) {
+			if (dubu::window::Window::IsGamepadConnected(i)) {
+				auto gps = dubu::window::Window::GetGamepadState(i);
+				if (gps) {
+					std::cout << "gamepad " << i << ": (" << gps->axes[0]
+					          << ", " << gps->axes[1] << ", " << gps->axes[2]
+					          << ", " << gps->axes[3] << ", " << gps->axes[4]
+					          << ", " << gps->axes[5] << ")" << std::endl;
+				}
+			}
+		}
+		std::this_thread::sleep_for(1000ms);
 	}
 }
