@@ -1,7 +1,6 @@
 #include <iostream>
 #include <string>
 #include <thread>
-#include <chrono>
 
 using namespace std::chrono_literals;
 
@@ -124,7 +123,7 @@ int main() {
 		for (std::size_t i = 0; i < windows.size(); ++i) {
 			auto& window = windows[i]->window;
 			if (window->ShouldClose()) {
-				windows.erase(windows.begin() + i);
+				windows.erase(windows.begin() + static_cast<std::ptrdiff_t>(i));
 				--i;
 				continue;
 			}
@@ -132,17 +131,6 @@ int main() {
 			window->PollEvents();
 		}
 
-		for (int i = 0; i < 4; ++i) {
-			if (dubu::window::Window::IsGamepadConnected(i)) {
-				auto gps = dubu::window::Window::GetGamepadState(i);
-				if (gps) {
-					std::cout << "gamepad " << i << ": (" << gps->axes[0]
-					          << ", " << gps->axes[1] << ", " << gps->axes[2]
-					          << ", " << gps->axes[3] << ", " << gps->axes[4]
-					          << ", " << gps->axes[5] << ")" << std::endl;
-				}
-			}
-		}
-		std::this_thread::sleep_for(1000ms);
+		std::this_thread::yield();
 	}
 }
