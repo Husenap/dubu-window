@@ -28,8 +28,11 @@ public:
 	void SimulateEventCursorPos(const EventCursorPos& e);
 	void SimulateEventMouseButton(const EventMouseButton& e);
 
-	static bool                            IsGamepadConnected(int gamepadIndex);
-	static std::optional<GLFWgamepadstate> GetGamepadState(int gamepadIndex);
+	[[nodiscard]] static bool IsGamepadConnected(int gamepadIndex);
+	[[nodiscard]] static std::optional<GLFWgamepadstate> GetGamepadState(
+	    int gamepadIndex);
+
+	[[nodiscard]] GLFWwindow* GetWindowHandle() const { return mWindow; }
 
 private:
 	static Window* GetUserWindow(GLFWwindow* window);
