@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Events.h"
+
 namespace dubu::window {
 
 enum class CursorMode {
@@ -20,6 +22,11 @@ public:
 
 	void SetCursorMode(dubu::window::CursorMode cursorMode);
 	bool IsHovered() const;
+
+	void SimulateEventKey(const EventKey& e);
+	void SimulateEventChar(const EventChar& e);
+	void SimulateEventCursorPos(const EventCursorPos& e);
+	void SimulateEventMouseButton(const EventMouseButton& e);
 
 	static bool                            IsGamepadConnected(int gamepadIndex);
 	static std::optional<GLFWgamepadstate> GetGamepadState(int gamepadIndex);

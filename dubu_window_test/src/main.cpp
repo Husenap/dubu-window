@@ -2,8 +2,6 @@
 #include <string>
 #include <thread>
 
-using namespace std::chrono_literals;
-
 #include <dubu_window/dubu_window.h>
 
 class WindowInstance : public dubu::event::EventSubscriber {
@@ -11,6 +9,8 @@ public:
 	WindowInstance(int number) {
 		name   = "Window " + std::to_string(number);
 		window = std::make_unique<dubu::window::Window>(400, 400, name);
+		simulatedWindow = std::make_unique<dubu::window::Window>(
+		    400, 400, "Simulated " + name);
 
 		Subscribe<dubu::window::EventResize>(
 		    [this](const auto& e) {
@@ -30,37 +30,80 @@ public:
 			              << e.scancode << ", " << e.mods << ")" << std::endl;
 		    },
 		    *window);
+		Subscribe<dubu::window::EventKeyPress>(
+		    [this](const auto& e) {
+			    std::cout << "Simulated " << name << " key press: (" << e.key
+			              << ", " << e.scancode << ", " << e.mods << ")"
+			              << std::endl;
+		    },
+		    *simulatedWindow);
 		Subscribe<dubu::window::EventKey>(
 		    [this](const auto& e) {
 			    std::cout << name << " key: (" << e.key << ", " << e.scancode
 			              << ", " << e.action << ", " << e.mods << ")"
 			              << std::endl;
+			    simulatedWindow->SimulateEventKey(e);
 		    },
 		    *window);
+		Subscribe<dubu::window::EventKey>(
+		    [this](const auto& e) {
+			    std::cout << "Simulated " << name << " key: (" << e.key << ", "
+			              << e.scancode << ", " << e.action << ", " << e.mods
+			              << ")" << std::endl;
+		    },
+		    *simulatedWindow);
 		Subscribe<dubu::window::EventKeyRelease>(
 		    [this](const auto& e) {
 			    std::cout << name << " key release: (" << e.key << ", "
 			              << e.scancode << ", " << e.mods << ")" << std::endl;
 		    },
 		    *window);
+		Subscribe<dubu::window::EventKeyRelease>(
+		    [this](const auto& e) {
+			    std::cout << "Simulated " << name << " key release: (" << e.key
+			              << ", " << e.scancode << ", " << e.mods << ")"
+			              << std::endl;
+		    },
+		    *simulatedWindow);
 		Subscribe<dubu::window::EventKeyRepeat>(
 		    [this](const auto& e) {
 			    std::cout << name << " key repeat: (" << e.key << ", "
 			              << e.scancode << ", " << e.mods << ")" << std::endl;
 		    },
 		    *window);
+		Subscribe<dubu::window::EventKeyRepeat>(
+		    [this](const auto& e) {
+			    std::cout << "Simulated " << name << " key repeat: (" << e.key
+			              << ", " << e.scancode << ", " << e.mods << ")"
+			              << std::endl;
+		    },
+		    *simulatedWindow);
 		Subscribe<dubu::window::EventChar>(
 		    [this](const auto& e) {
 			    std::cout << name << " char: (" << e.codepoint << ")"
 			              << std::endl;
+			    simulatedWindow->SimulateEventChar(e);
 		    },
 		    *window);
+		Subscribe<dubu::window::EventChar>(
+		    [this](const auto& e) {
+			    std::cout << "Simulated " << name << " char: (" << e.codepoint
+			              << ")" << std::endl;
+		    },
+		    *simulatedWindow);
 		Subscribe<dubu::window::EventCursorPos>(
 		    [this](const auto& e) {
 			    std::cout << name << " cursor pos: (" << e.posX << ", "
 			              << e.posY << ")" << std::endl;
+			    simulatedWindow->SimulateEventCursorPos(e);
 		    },
 		    *window);
+		Subscribe<dubu::window::EventCursorPos>(
+		    [this](const auto& e) {
+			    std::cout << "Simulated " << name << " cursor pos: (" << e.posX
+			              << ", " << e.posY << ")" << std::endl;
+		    },
+		    *simulatedWindow);
 		Subscribe<dubu::window::EventCursorEnter>(
 		    [this](const auto&) {
 			    std::cout << name << " cursor enter" << std::endl;
@@ -75,20 +118,40 @@ public:
 		    [this](const auto& e) {
 			    std::cout << name << " mouse button: (" << e.button << ", "
 			              << e.action << ", " << e.mods << ")" << std::endl;
+			    simulatedWindow->SimulateEventMouseButton(e);
 		    },
 		    *window);
+		Subscribe<dubu::window::EventMouseButton>(
+		    [this](const auto& e) {
+			    std::cout << "Simulated " << name << " mouse button: ("
+			              << e.button << ", " << e.action << ", " << e.mods
+			              << ")" << std::endl;
+		    },
+		    *simulatedWindow);
 		Subscribe<dubu::window::EventMouseButtonPress>(
 		    [this](const auto& e) {
 			    std::cout << name << " mouse button press: (" << e.button
 			              << ", " << e.mods << ")" << std::endl;
 		    },
 		    *window);
+		Subscribe<dubu::window::EventMouseButtonPress>(
+		    [this](const auto& e) {
+			    std::cout << "Simulated " << name << " mouse button press: ("
+			              << e.button << ", " << e.mods << ")" << std::endl;
+		    },
+		    *simulatedWindow);
 		Subscribe<dubu::window::EventMouseButtonRelease>(
 		    [this](const auto& e) {
 			    std::cout << name << " mouse button release: (" << e.button
 			              << ", " << e.mods << ")" << std::endl;
 		    },
 		    *window);
+		Subscribe<dubu::window::EventMouseButtonRelease>(
+		    [this](const auto& e) {
+			    std::cout << "Simulated " << name << " mouse button release: ("
+			              << e.button << ", " << e.mods << ")" << std::endl;
+		    },
+		    *simulatedWindow);
 		Subscribe<dubu::window::EventScroll>(
 		    [this](const auto& e) {
 			    std::cout << name << " scroll: (" << e.offsetX << ", "
@@ -104,6 +167,7 @@ public:
 	}
 	std::string                           name;
 	std::unique_ptr<dubu::window::Window> window;
+	std::unique_ptr<dubu::window::Window> simulatedWindow;
 };
 
 int main() {

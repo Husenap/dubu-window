@@ -1,7 +1,5 @@
 #include "Window.h"
 
-#include "Events.h"
-
 namespace dubu::window {
 
 int Window::ConstructionCounter = 0;
@@ -71,6 +69,50 @@ void Window::SetCursorMode(dubu::window::CursorMode cursorMode) {
 
 bool Window::IsHovered() const {
 	return glfwGetWindowAttrib(mWindow, GLFW_HOVERED);
+}
+
+void Window::SimulateEventKey(const EventKey& e) {
+	Emit(e);
+
+	switch (e.action) {
+	case GLFW_PRESS:
+		Emit(EventKeyPress{
+		    .key = e.key, .scancode = e.scancode, .mods = e.mods});
+		break;
+	case GLFW_RELEASE:
+		Emit(EventKeyRelease{
+		    .key = e.key, .scancode = e.scancode, .mods = e.mods});
+		break;
+	case GLFW_REPEAT:
+		Emit(EventKeyRepeat{
+		    .key = e.key, .scancode = e.scancode, .mods = e.mods});
+		break;
+	default:
+		break;
+	}
+}
+
+void Window::SimulateEventChar(const EventChar& e) {
+	Emit(e);
+}
+
+void Window::SimulateEventCursorPos(const EventCursorPos& e) {
+	Emit(e);
+}
+
+void Window::SimulateEventMouseButton(const EventMouseButton& e) {
+	Emit(e);
+
+	switch (e.action) {
+	case GLFW_PRESS:
+		Emit(EventMouseButtonPress{.button = e.button, .mods = e.mods});
+		break;
+	case GLFW_RELEASE:
+		Emit(EventMouseButtonRelease{.button = e.button, .mods = e.mods});
+		break;
+	default:
+		break;
+	}
 }
 
 bool Window::IsGamepadConnected(int gamepadIndex) {
