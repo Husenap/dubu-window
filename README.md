@@ -13,8 +13,8 @@ C++ Window Library using [GLFW](https://github.com/glfw/glfw) and [dubu-event](h
 # Features
 
 * Open multiple windows
-* Simple interface
 * Subscribe to window events
+* Simulate input events
 
 # Examples
 
@@ -26,11 +26,12 @@ C++ Window Library using [GLFW](https://github.com/glfw/glfw) and [dubu-event](h
 
 int main() {
     dubu::window::Window window(400, 400, "simple window");
-    auto token = window.Subscribe<dubu::window::EventResize>([](const auto& e) {
-        std::cout << "Window "
-                  << " resized: " << e.width << ", " << e.height << ")"
-                  << std::endl;
-    });
+    auto                 token =
+        window.RegisterListener<dubu::window::EventResize>([](const auto& e) {
+            std::cout << "Window "
+                      << " resized: " << e.width << ", " << e.height << ")"
+                      << std::endl;
+        });
 
     while (!window.ShouldClose()) {
         window.PollEvents();
@@ -51,7 +52,7 @@ struct WindowInstance {
 };
 
 int main() {
-    constexpr int NumWindows = 5;
+    constexpr int NumWindows = 2;
 
     std::vector<WindowInstance> windows;
     for (int i = 0; i < NumWindows; ++i) {
@@ -64,7 +65,7 @@ int main() {
 
     for (std::size_t i = 0; i < windows.size(); ++i) {
         windows[i].resizeToken =
-            windows[i].window->Subscribe<dubu::window::EventResize>(
+            windows[i].window->RegisterListener<dubu::window::EventResize>(
                 [i](const auto& e) {
                     std::cout << "Window " << (i + 1) << " resized: " << e.width
                               << ", " << e.height << ")" << std::endl;
