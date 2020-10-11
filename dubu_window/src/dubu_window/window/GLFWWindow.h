@@ -1,46 +1,37 @@
 #pragma once
 
-#include "Events.h"
+#include "IWindow.h"
 
 namespace dubu::window {
 
-enum class CursorMode {
-	Normal,
-	Hidden,
-	Locked,
-};
-
-class Window : public dubu::event::EventEmitter {
+class GLFWWindow : public IWindow {
 public:
-	Window();
-	Window(int width, int height, const std::string& title);
-	~Window();
+	GLFWWindow();
+	GLFWWindow(int width, int height, const std::string& title);
+	~GLFWWindow();
 
-	void PollEvents();
-	bool ShouldClose() const;
-	void SwapBuffers();
+	void PollEvents() override;
+	void SwapBuffers() override;
 
-	void SetCursorMode(dubu::window::CursorMode cursorMode);
-	bool IsHovered() const;
+	[[nodiscard]] bool ShouldClose() const override;
+	[[nodiscard]] bool IsHovered() const override;
+	[[nodiscard]] bool IsFocused() const override;
 
-	void SimulateEventKey(const EventKey& e);
-	void SimulateEventChar(const EventChar& e);
-	void SimulateEventCursorPos(const EventCursorPos& e);
-	void SimulateEventMouseButton(const EventMouseButton& e);
+	void SetCursorMode(dubu::window::CursorMode cursorMode) override;
 
 	[[nodiscard]] static bool IsGamepadConnected(int gamepadIndex);
 	[[nodiscard]] static std::optional<GLFWgamepadstate> GetGamepadState(
 	    int gamepadIndex);
 
-	[[nodiscard]] GLFWwindow* GetWindowHandle() const { return mWindow; }
+	[[nodiscard]] GLFWwindow* GetGLFWHandle() const { return mWindow; }
 
 private:
-	static Window* GetUserWindow(GLFWwindow* window);
-	static void    WindowFramebufferSizeCallback(GLFWwindow* window,
-	                                             int         width,
-	                                             int         height);
-	static void    WindowKeyCallback(
-	       GLFWwindow* window, int key, int scancode, int action, int mods);
+	static GLFWWindow* GetUserWindow(GLFWwindow* window);
+	static void        WindowFramebufferSizeCallback(GLFWwindow* window,
+	                                                 int         width,
+	                                                 int         height);
+	static void        WindowKeyCallback(
+	           GLFWwindow* window, int key, int scancode, int action, int mods);
 	static void WindowDropCallback(GLFWwindow*  window,
 	                               int          count,
 	                               const char** paths);
