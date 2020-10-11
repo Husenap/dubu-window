@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Definitions.h"
+
 namespace dubu::window {
 
 struct EventResize {
@@ -13,25 +15,25 @@ struct EventContentScale {
 };
 
 struct EventKey {
-	int32_t key;
+	Key     key;
 	int32_t scancode;
-	int32_t action;
-	int     mods;
+	Action  action;
+	Mods    mods;
 };
 struct EventKeyPress {
-	int32_t key;
+	Key     key;
 	int32_t scancode;
-	int32_t mods;
+	Mods    mods;
 };
 struct EventKeyRelease {
-	int32_t key;
+	Key     key;
 	int32_t scancode;
-	int32_t mods;
+	Mods    mods;
 };
 struct EventKeyRepeat {
-	int32_t key;
+	Key     key;
 	int32_t scancode;
-	int32_t mods;
+	Mods    mods;
 };
 
 struct EventChar {
@@ -46,17 +48,17 @@ struct EventCursorEnter {};
 struct EventCursorLeave {};
 
 struct EventMouseButton {
-	int32_t button;
-	int32_t action;
-	int32_t mods;
+	MouseButton button;
+	Action      action;
+	Mods        mods;
 };
 struct EventMouseButtonPress {
-	int32_t button;
-	int32_t mods;
+	MouseButton button;
+	Mods        mods;
 };
 struct EventMouseButtonRelease {
-	int32_t button;
-	int32_t mods;
+	MouseButton button;
+	Mods        mods;
 };
 
 struct EventScroll {

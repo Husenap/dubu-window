@@ -4,9 +4,12 @@ set(src_precompiled
     "src/dubu_window/precompiled.h")
 
 set(src_window
+    "src/dubu_window/window/Definitions.h"
     "src/dubu_window/window/Events.h"
-    "src/dubu_window/window/Window.cpp"
-    "src/dubu_window/window/Window.h")
+    "src/dubu_window/window/IWindow.cpp"
+    "src/dubu_window/window/IWindow.h"
+    "src/dubu_window/window/GLFWWindow.cpp"
+    "src/dubu_window/window/GLFWWindow.h")
 
 set(src_dubu_window
     "src/dubu_window/dubu_window.h")
