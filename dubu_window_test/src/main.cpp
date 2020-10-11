@@ -171,7 +171,7 @@ public:
 };
 
 int main() {
-	constexpr int                                NumStartWindows = 2;
+	constexpr int                                NumStartWindows = 1;
 	int                                          windowCount     = 0;
 	std::vector<std::unique_ptr<WindowInstance>> windows;
 

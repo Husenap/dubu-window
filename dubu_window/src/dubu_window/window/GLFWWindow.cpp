@@ -1,5 +1,7 @@
 #include "GLFWWindow.h"
 
+#include <iostream>
+
 namespace dubu::window {
 
 int GLFWWindow::ConstructionCounter = 0;
@@ -97,9 +99,14 @@ std::optional<GamepadState> GLFWWindow::GetGamepadState(int gamepadIndex) {
 		gps.buttons[i] =
 		    state.buttons[i] == GLFW_PRESS ? Action::Press : Action::Release;
 	}
-	for (uint8_t i = 0; i <= GamepadAxisLast; ++i) {
-		gps.axes[i] = state.axes[i];
-	}
+	gps.axes[GamepadAxisLeftX]  = state.axes[GamepadAxisLeftX];
+	gps.axes[GamepadAxisLeftY]  = -state.axes[GamepadAxisLeftY];
+	gps.axes[GamepadAxisRightX] = state.axes[GamepadAxisRightX];
+	gps.axes[GamepadAxisRightY] = -state.axes[GamepadAxisRightY];
+	gps.axes[GamepadAxisLeftTrigger] =
+	    state.axes[GamepadAxisLeftTrigger] * 0.5f + 0.5f;
+	gps.axes[GamepadAxisRightTrigger] =
+	    state.axes[GamepadAxisRightTrigger] * 0.5f + 0.5f;
 
 	return gps;
 }
