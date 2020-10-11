@@ -48,4 +48,12 @@ void IWindow::SimulateEventMouseButton(const EventMouseButton& e) {
 	}
 }
 
+bool IWindow::IsGamepadConnected(int) {
+	return false;
+}
+
+std::optional<GamepadState> IWindow::GetGamepadState(int) {
+	return std::nullopt;
+}
+
 }  // namespace dubu::window

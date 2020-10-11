@@ -19,9 +19,9 @@ public:
 
 	void SetCursorMode(dubu::window::CursorMode cursorMode) override;
 
-	[[nodiscard]] static bool IsGamepadConnected(int gamepadIndex);
-	[[nodiscard]] static std::optional<GLFWgamepadstate> GetGamepadState(
-	    int gamepadIndex);
+	[[nodiscard]] bool IsGamepadConnected(int gamepadIndex) override;
+	[[nodiscard]] std::optional<GamepadState> GetGamepadState(
+	    int gamepadIndex) override;
 
 	[[nodiscard]] GLFWwindow* GetGLFWHandle() const { return mWindow; }
 

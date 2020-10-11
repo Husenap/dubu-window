@@ -29,6 +29,10 @@ public:
 	void SimulateEventCursorPos(const EventCursorPos& e);
 	void SimulateEventMouseButton(const EventMouseButton& e);
 
+	[[nodiscard]] virtual bool IsGamepadConnected(int gamepadIndex);
+	[[nodiscard]] virtual std::optional<GamepadState> GetGamepadState(
+	    int gamepadIndex);
+
 protected:
 private:
 };

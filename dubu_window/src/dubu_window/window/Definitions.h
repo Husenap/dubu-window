@@ -143,7 +143,7 @@ enum Key : int16_t {
 	KeyRightAlt     = 346,
 	KeyRightSuper   = 347,
 	KeyMenu         = 348,
-	KeyLast         = KeyMenu
+	KeyLast         = KeyMenu,
 };
 
 enum MouseButton : uint8_t {
@@ -159,6 +159,47 @@ enum MouseButton : uint8_t {
 	MouseButtonLeft   = MouseButton1,
 	MouseButtonRight  = MouseButton2,
 	MouseButtonMiddle = MouseButton3,
+};
+
+enum GamepadButton : uint8_t {
+	/* Xbox buttons */
+	GamepadButtonA           = 0,
+	GamepadButtonB           = 1,
+	GamepadButtonX           = 2,
+	GamepadButtonY           = 3,
+	GamepadButtonLeftBumper  = 4,
+	GamepadButtonRightBumper = 5,
+	GamepadButtonBack        = 6,
+	GamepadButtonStart       = 7,
+	GamepadButtonGuide       = 8,
+	GamepadButtonLeftThumb   = 9,
+	GamepadButtonRightThumb  = 10,
+	GamepadButtonDpadUp      = 11,
+	GamepadButtonDpadRight   = 12,
+	GamepadButtonDpadDown    = 13,
+	GamepadButtonDpadLeft    = 14,
+	GamepadButtonLast        = GamepadButtonDpadLeft,
+
+	/* DS4 buttons */
+	GamepadButtonCross    = GamepadButtonA,
+	GamepadButtonCircle   = GamepadButtonB,
+	GamepadButtonSquare   = GamepadButtonX,
+	GamepadButtonTriangle = GamepadButtonY,
+};
+
+enum GamepadAxis : uint8_t {
+	GamepadAxisLeftX        = 0,
+	GamepadAxisLeftY        = 1,
+	GamepadAxisRightX       = 2,
+	GamepadAxisRightY       = 3,
+	GamepadAxisLeftTrigger  = 4,
+	GamepadAxisRightTrigger = 5,
+	GamepadAxisLast         = GamepadAxisRightTrigger,
+};
+
+struct GamepadState {
+	Action buttons[15];
+	float  axes[6];
 };
 
 }  // namespace dubu::window

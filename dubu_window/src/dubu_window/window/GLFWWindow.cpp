@@ -80,15 +80,25 @@ bool GLFWWindow::IsGamepadConnected(int gamepadIndex) {
 	return glfwJoystickIsGamepad(gamepadIndex);
 }
 
-std::optional<GLFWgamepadstate> GLFWWindow::GetGamepadState(int gamepadIndex) {
+std::optional<GamepadState> GLFWWindow::GetGamepadState(int gamepadIndex) {
 	if (!IsGamepadConnected(gamepadIndex)) {
 		return std::nullopt;
 	}
 
-	GLFWgamepadstate gps;
+	GLFWgamepadstate state;
 
-	if (glfwGetGamepadState(gamepadIndex, &gps) == GLFW_FALSE) {
+	if (glfwGetGamepadState(gamepadIndex, &state) == GLFW_FALSE) {
 		return std::nullopt;
+	}
+
+	GamepadState gps;
+
+	for (uint8_t i = 0; i <= GamepadButtonLast; ++i) {
+		gps.buttons[i] =
+		    state.buttons[i] == GLFW_PRESS ? Action::Press : Action::Release;
+	}
+	for (uint8_t i = 0; i <= GamepadAxisLast; ++i) {
+		gps.axes[i] = state.axes[i];
 	}
 
 	return gps;
