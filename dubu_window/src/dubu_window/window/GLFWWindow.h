@@ -6,8 +6,20 @@ namespace dubu::window {
 
 class GLFWWindow : public IWindow {
 public:
-	GLFWWindow();
-	GLFWWindow(int width, int height, const std::string& title);
+	enum class Api { NoApi, OpenGL };
+	struct CreateInfo {
+		int         width               = 800;
+		int         height              = 600;
+		std::string title               = "dubu-window";
+		Api         api                 = Api::NoApi;
+		int         contextVersionMajor = 4;
+		int         contextVersionMinor = 6;
+		int         opengl_profile      = GLFW_OPENGL_CORE_PROFILE;
+	};
+
+public:
+	GLFWWindow(const CreateInfo& createInfo = {});
+	GLFWWindow(int width, int height, std::string_view title);
 	~GLFWWindow();
 
 	void PollEvents() override;

@@ -6,17 +6,32 @@ namespace dubu::window {
 
 int GLFWWindow::ConstructionCounter = 0;
 
-GLFWWindow::GLFWWindow()
-    : GLFWWindow(800, 600, "dubu-window") {}
+GLFWWindow::GLFWWindow(int width, int height, std::string_view title)
+    : GLFWWindow(CreateInfo{
+          .width = width, .height = height, .title = title.data()}) {}
 
-GLFWWindow::GLFWWindow(int width, int height, const std::string& title) {
+GLFWWindow::GLFWWindow(const CreateInfo& createInfo) {
 	if (ConstructionCounter <= 0) {
 		glfwInit();
 	}
 	++ConstructionCounter;
 
-	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-	mWindow = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
+	switch (createInfo.api) {
+	case Api::NoApi:
+		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+		break;
+	case Api::OpenGL:
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+		break;
+	}
+
+	mWindow = glfwCreateWindow(createInfo.width,
+	                           createInfo.height,
+	                           createInfo.title.c_str(),
+	                           nullptr,
+	                           nullptr);
 
 	glfwSetWindowUserPointer(mWindow, this);
 

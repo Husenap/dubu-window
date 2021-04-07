@@ -8,7 +8,13 @@ class WindowInstance : public dubu::event::EventSubscriber {
 public:
 	WindowInstance(int number) {
 		name   = "Window " + std::to_string(number);
-		window = std::make_unique<dubu::window::GLFWWindow>(400, 400, name);
+		window = std::make_unique<dubu::window::GLFWWindow>(
+		    dubu::window::GLFWWindow::CreateInfo{
+		        .width  = 400,
+		        .height = 400,
+		        .title  = name,
+		    });
+
 		simulatedWindow = std::make_unique<dubu::window::GLFWWindow>(
 		    400, 400, "Simulated " + name);
 
