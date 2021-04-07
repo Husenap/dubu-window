@@ -18,7 +18,7 @@ public:
 	};
 
 public:
-	GLFWWindow(const CreateInfo& createInfo = {});
+	GLFWWindow(CreateInfo createInfo = {});
 	GLFWWindow(int width, int height, std::string_view title);
 	~GLFWWindow();
 

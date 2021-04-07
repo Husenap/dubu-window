@@ -10,7 +10,7 @@ GLFWWindow::GLFWWindow(int width, int height, std::string_view title)
     : GLFWWindow(CreateInfo{
           .width = width, .height = height, .title = title.data()}) {}
 
-GLFWWindow::GLFWWindow(const CreateInfo& createInfo) {
+GLFWWindow::GLFWWindow(CreateInfo createInfo) {
 	if (ConstructionCounter <= 0) {
 		glfwInit();
 	}
